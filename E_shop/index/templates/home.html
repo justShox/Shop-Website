@@ -8,7 +8,18 @@
 <h1>Главная страница</h1>
 <hr>
 {% csrf_token %}
-{{ form }} <button>Поиск</button>
+{{ form }}
+<input type="text" name="search_product">
+<button>Поиск</button>
+Товары : <br>
+{% for i in product %}
+<a href="/product/{{ i.id }}">{{ i.pr_name }}</a><br>
+{% endfor %}
+<hr>
+Категории: <br>
+{% for i in category %}
+<a href="/category/{{ i.id }}">{{ i.name }}</a><br>
+{% endfor %}
 <hr>
 <a href="/about-us">О нас</a>
 <a href="/contact-us">Наши контакты</a>
