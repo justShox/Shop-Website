@@ -49,13 +49,43 @@ def contact(request):
 # Поиск продуктов
 def search_product(request):
     if request.method == 'POST':
-        get_product = request.post.get('search_product')
+        get_product = request.POST.get('search_product')
         try:
-            exact_product = Product.objects.get(product_name__icontains=get_product)
-            return redirect(f'product/{exact_product.id}')
+            exact_product = Product.objects.get(pr_name__icontains=get_product)
+            return redirect(f'/product/{exact_product.id}')
         except:
-            return redirect('/pr-not-found')
+            return redirect('/product_not_found')
 
 
 def pr_not_found(request):
     return render(request, 'not_found.html')
+
+
+# Добавление товара в корзину
+def add_to_cart(request, pk):
+    if request.method == 'POST':
+        checker = Product.objects.get(id=pk)
+        if checker.pr_count >= int(request.POST.get('pr_amount')):
+            Cart.objects.create(user_id=request.user.id,
+                                user_product=checker,
+                                user_product_quantity=int(request.POST.get('pr_amount')).save())
+            return redirect('/')
+
+
+# Отображение корзины пользователя
+def get_user_cart(request):
+    # Вся инфа о корзине пользователя
+    cart = Cart.objects.filter(user_id=request.user.id)
+
+    # Отправить данные на фронт
+    context = {'cart': cart}
+    return render(request, 'cart.html', context)
+
+
+# Удаления товара из корзины
+def del_from_cart(request, pk):
+    product_to_delete = Product.objects.get(id=pk)
+    Cart.objects.filter(user_id=request.user.id,
+                        user_product=product_to_delete).delete()
+
+    return redirect('/cart')

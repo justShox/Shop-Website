@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Главная</title>
@@ -7,10 +7,15 @@
 <body>
 <h1>Главная страница</h1>
 <hr>
-{% csrf_token %}
-{{ form }}
-<input type="text" name="search_product">
-<button>Поиск</button>
+<a href="/accounts/login">Войти |</a>
+<a href="/account/logout">Выйти</a>
+<hr>
+<form action="search" method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="search_product">
+    <button>Поиск</button>
+</form>
 Товары : <br>
 {% for i in product %}
 <a href="/product/{{ i.id }}">{{ i.pr_name }}</a><br>
