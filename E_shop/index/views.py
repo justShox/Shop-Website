@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from . import forms, models
 from .models import Product, Category, Cart
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
+from django.views import View
 
 
 # Create your views here.
@@ -89,3 +92,27 @@ def del_from_cart(request, pk):
                         user_product=product_to_delete).delete()
 
     return redirect('/cart')
+
+
+# Регистрация
+class Register(View):
+    template_name = 'registration/register.html'
+
+    # Отправка формы регистрации
+    def get(self, request):
+        context = {'form': UserCreationForm}
+        return render(request, self.template_name, context)
+
+    # Добавление в БД
+    def post(self, request):
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('/')
+        context = {'form': UserCreationForm}
+        return render(request, self.template_name, context)
